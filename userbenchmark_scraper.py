@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import json
-import re
-import argparse
 
 import cloudscraper
 from bs4 import BeautifulSoup
@@ -81,6 +79,10 @@ class UserBenchmarkScraper(object):
 
 
 if __name__ == '__main__':
+	import re
+	import argparse
+	import csv
+
 	arg = argparse.ArgumentParser()
 	arg.add_argument("--type", default="CPU", choices=["CPU", "GPU", "SSD", "HDD", "RAM", "USB"], type=str.upper)
 	arg.add_argument('out', type=argparse.FileType('w', encoding='UTF-8'))
@@ -96,8 +98,6 @@ if __name__ == '__main__':
 
 	print("Sorting by best benchmark scores")
 	s.sort_by('MC_BENCH')		# sort by benchmark score
-
-	import csv
 
 	cpu_writer = csv.writer(args.out)
 

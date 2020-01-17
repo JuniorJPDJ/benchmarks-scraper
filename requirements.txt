@@ -1,0 +1,3 @@
+cloudscraper
+aiohttp
+bs4
