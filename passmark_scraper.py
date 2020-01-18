@@ -6,18 +6,19 @@ from bs4 import BeautifulSoup
 # TODO: additional parameters from child rows
 
 
-def get_page(url):
-	r = requests.get(url)
+def get_page(base_url, part_url):
+	r = requests.get(base_url)
 	bs = BeautifulSoup(r.text, "html.parser")
 
 	table = bs.find(id='cputable')		# for every benchmark hw it's the same, for gpu and hdd
 
-	thead = ['ID'] + [next(e.strings) for e in table.find('thead').find('tr').find_all('th')]
+	thead = ['ID', 'URL'] + [next(e.strings) for e in table.find('thead').find('tr').find_all('th')]
 
 	tbody = []
 	for tr in table.find('tbody').find_all('tr', class_=False):
 		tds = tr.find_all('td')
-		tr_a = [tr['id'][3:],]
+		part_id = tr['id'][3:]
+		tr_a = [part_id, part_url+part_id]
 		tr_a.extend([e.text for e in tds])
 
 		tbody.append(tr_a)
@@ -29,10 +30,16 @@ if __name__ == '__main__':
 	import argparse
 	import csv
 
-	urls = {
+	base_urls = {
 		"CPU": "https://www.cpubenchmark.net/CPU_mega_page.html",
 		"GPU": "https://www.videocardbenchmark.net/GPU_mega_page.html",
 		"HDD": "https://www.harddrivebenchmark.net/hdd-mega-page.html"
+	}
+	
+	part_urls = {
+		'CPU': 'https://www.cpubenchmark.net/cpu.php?id=',
+		'GPU': 'https://www.videocardbenchmark.net/gpu.php?id=',
+		'HDD': 'https://www.harddrivebenchmark.net/hdd.php?id='
 	}
 
 	arg = argparse.ArgumentParser()
@@ -44,7 +51,7 @@ if __name__ == '__main__':
 
 	csv_writer = csv.writer(args.out)
 
-	thead, tbody = get_page(urls[args.type])
+	thead, tbody = get_page(base_urls[args.type], part_urls[args.type])
 	csv_writer.writerow(thead)
 	csv_writer.writerows(tbody)
 	args.out.close()

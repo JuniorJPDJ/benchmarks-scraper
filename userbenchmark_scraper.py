@@ -65,14 +65,20 @@ class UserBenchmarkScraper(object):
 		thead_id[0] = 'NUM'
 		thead_id[1] = 'ID'
 
+		thead_text.append("Userbenchmark Part URL")
+		thead_id.append("URL")
+
+
 		tbody = [tr.find_all('td') for tr in table.find('tbody').find_all('tr')]
 		tbody_text = []
 		for row in tbody:
-			row_text = [row[0].text.strip(), row[1].find(attrs={'data-id': True})['data-id']]
+			part_id = row[1].find(attrs={'data-id': True})['data-id']
+			row_text = [row[0].text.strip(), part_id]
 			for col in row[2:]:
 				col_tc = col.find(class_='mh-tc')
 				col = col_tc if col_tc else col
 				row_text.append(" ".join(col.get_text(" ").split()))
+			row_text.append(f"{self.base_url}/SpeedTest/{part_id}/")
 			tbody_text.append(row_text)
 
 		return thead_id, thead_text, tbody_text
@@ -89,7 +95,7 @@ if __name__ == '__main__':
 	args = arg.parse_args()
 
 	print("Starting parsing userbenchmark", args.type, "category")
-	s = UserBenchmarkScraper(f"https://{args.type}.userbenchmark.com/", "MC"+args.type)
+	s = UserBenchmarkScraper(f"https://{args.type.lower()}.userbenchmark.com", "MC"+args.type)
 
 	for col in re.finditer("{action:'unhidecol',th:'(.*?)'}", s.main_page):
 		# show all possible columns
