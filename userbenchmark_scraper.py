@@ -91,6 +91,7 @@ if __name__ == '__main__':
 
 	arg = argparse.ArgumentParser()
 	arg.add_argument("--type", default="CPU", choices=["CPU", "GPU", "SSD", "HDD", "RAM", "USB"], type=str.upper)
+	arg.add_argument("--describe", '-d', default=0, action='store_const', const=1, help="Human readable headers in CSV file")
 	arg.add_argument('out', type=argparse.FileType('w', encoding='UTF-8'))
 	args = arg.parse_args()
 
@@ -116,7 +117,7 @@ if __name__ == '__main__':
 		if pg <= 1:
 			print(page[1])
 			print(page[0])
-			cpu_writer.writerow(page[0])
+			cpu_writer.writerow(page[args.describe])
 		for row in page[2]:
 			cpu_writer.writerow(row)
 
