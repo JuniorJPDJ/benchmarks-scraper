@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 
 from aiohttp import web
-
-# TODO: watchdog based file reloading
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 
 async def handle_request(request):
@@ -53,8 +53,12 @@ async def handle_request(request):
 			except ValueError:
 				pass
 
-			if not cmp(o, v):
-				out.remove(i)
+			try:
+				if not cmp(o, v):
+					out.remove(i)
+			except Exception as e:
+					print("Error happened:", e)
+					out.remove(i)
 
 	return web.Response(text=json.dumps(out), content_type="application/json")
 
@@ -71,8 +75,31 @@ def load_csv_files(in_dir: Path):
 	return out
 
 
+class FileReloadEventHandler(FileSystemEventHandler):
+	def on_any_event(self, event):
+		print("Datafiles changed, reloading")
+		global data
+		data = load_csv_files(csv_path)
+
+
 if __name__ == '__main__':
 	app = web.Application()
 	app.add_routes([web.get('/{filename}', handle_request)])
-	data = load_csv_files(Path("out"))
+
+	print("Loading datafiles")
+	csv_path = Path("out")
+	data = load_csv_files(csv_path)
+
+	fs_event_handler = FileReloadEventHandler()
+	observer = Observer()
+	observer.schedule(fs_event_handler, str(csv_path), recursive=True)
+	observer.start()
+
+	print("Webserver starting")
 	web.run_app(app, port=9999)
+	print("Webserver stopping")
+
+	observer.stop()
+	observer.join()
+
+	print("Webserver stopped")
