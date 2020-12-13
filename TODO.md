@@ -1,8 +1,11 @@
 - [ ] geekbench CPU parser (single/multicore)
-- [ ] geekbench GPU parser (vulcan/opencl/cuda)
+- [ ] geekbench GPU parser
+	- [ ] https://browser.geekbench.com/vulkan-benchmarks
+	- [ ] https://browser.geekbench.com/opencl-benchmarks
+	- [ ] https://browser.geekbench.com/cuda-benchmarks
 - [ ] scraper for full speedtest namespace of userbenchmark (looooots of requests, gonna get bans)
 - [x] CSV based webserver with data filtering
-- [ ] Dockerfile for webserver
+- [x] Dockerfile for webserver
 - [ ] Dockerfile for cron running all scrapers
 - [ ] docker-compose for whole project
 - [ ] google sheets script for downloading data from webserver
