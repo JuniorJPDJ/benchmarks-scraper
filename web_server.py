@@ -87,7 +87,7 @@ if __name__ == '__main__':
 	app.add_routes([web.get('/{filename}', handle_request)])
 
 	print("Loading datafiles")
-	csv_path = Path("out")
+	csv_path = Path("data")
 	data = load_csv_files(csv_path)
 
 	fs_event_handler = FileReloadEventHandler()

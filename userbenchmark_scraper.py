@@ -99,9 +99,9 @@ if __name__ == '__main__':
 	import csv
 
 	arg = argparse.ArgumentParser()
-	arg.add_argument("--type", default="CPU", choices=["CPU", "GPU", "SSD", "HDD", "RAM", "USB"], type=str.upper)
-	arg.add_argument("--describe", '-d', default=0, action='store_const', const=1, help="Human readable headers in CSV file")
-	arg.add_argument('out', type=argparse.FileType('w', encoding='UTF-8'))
+	arg.add_argument('-t', '--type', default="CPU", choices=["CPU", "GPU", "SSD", "HDD", "RAM", "USB"], type=str.upper)
+	arg.add_argument('-d', '--describe', default=0, action='store_const', const=1, help="Human readable headers in CSV file")
+	arg.add_argument('-o', '--output_file', type=argparse.FileType('w', encoding='UTF-8'))
 	args = arg.parse_args()
 
 	print("Starting parsing userbenchmark", args.type, "category")
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 	print("Sorting by best benchmark scores")
 	s.sort_by('MC_BENCH')		# sort by benchmark score
 
-	csv_writer = csv.writer(args.out)
+	csv_writer = csv.writer(args.output_file)
 
 	pages = int(s.main_page.split('<a>Page 1 of ', 1)[1].split('</a>', 1)[0])
 	print("Found", pages, "pages.")
@@ -130,4 +130,4 @@ if __name__ == '__main__':
 		for row in page[2]:
 			csv_writer.writerow(row)
 
-	args.out.close()
+	args.output_file.close()

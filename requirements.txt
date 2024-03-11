@@ -2,3 +2,4 @@ cloudscraper
 aiohttp
 bs4
 watchdog
+requests

@@ -1,4 +1,5 @@
 venv/
-out
+data/
 .idea/
 __pycache__/
+chart/charts/

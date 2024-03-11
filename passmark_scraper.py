@@ -1,57 +1,88 @@
 #!/usr/bin/env python3
+import math
+import re
+import time
+
 import requests
 
-from bs4 import BeautifulSoup
 
-# TODO: additional parameters from child rows
+base_urls = {
+    "CPU": "https://www.cpubenchmark.net/CPU_mega_page.html",
+    "GPU": "https://www.videocardbenchmark.net/GPU_mega_page.html",
+    "HDD": "https://www.harddrivebenchmark.net/hdd-mega-page.html",
+}
+
+ts = int(time.time())
+data_urls = {
+    "CPU": f"https://www.cpubenchmark.net/data/?_={ts}",
+    "GPU": f"https://www.videocardbenchmark.net/data/?_={ts}",
+    "HDD": f"https://www.harddrivebenchmark.net/data/?_={ts}",
+}
+
+part_urls = {
+    'CPU': 'https://www.cpubenchmark.net/cpu.php?id=',
+    'GPU': 'https://www.videocardbenchmark.net/gpu.php?id=',
+    'HDD': 'https://www.harddrivebenchmark.net/hdd.php?id=',
+    # 'RAM': 'https://www.memorybenchmark.net/ram.php?id=',
+    # No mega page for memory
+}
+
+nan = re.compile(r'[^\d.]+')
 
 
-def get_page(base_url, part_url):
-	r = requests.get(base_url)
-	bs = BeautifulSoup(r.text, "html.parser")
+def get_table(type):
+    base_url = base_urls[type]
+    part_url = part_urls[type]
+    data_url = data_urls[type]
 
-	table = bs.find(id='cputable')		# for every benchmark hw it's the same, for gpu and hdd
+    sess = requests.session()
+    sess.get(base_url)
+    data = sess.get(data_url, headers={
+            "X-Requested-With": "XMLHttpRequest"
+    }).json()
 
-	thead = ['ID', 'URL'] + [next(e.strings) for e in table.find('thead').find('tr').find_all('th')]
+    d = data['data'][0]
+    head = ('rank', 'name', 'id', *sorted(k for k in d if k not in ('rank', 'name', 'id', 'href')), 'url')
+    print("head:", head)
 
-	tbody = []
-	for tr in table.find('tbody').find_all('tr', class_=False):
-		tds = tr.find_all('td')
-		part_id = tr['id'][3:]
-		tr_a = [part_id, part_url+part_id]
-		tr_a.extend([e.text for e in tds])
+    items = []
+    for i in data['data']:
+        for numeric in ('id', 'rank', 'cpumark', 'thread', 'samples', 'tdp', 'speed', 'turbo', 'cpuCount', 'cores', 'logicals', 'secondaryCores', 'secondaryLogicals'):
+            if numeric in i:
+                v = i[numeric]
+                if not v or v == 'NA':
+                    i[numeric] = None
+                elif v == 'Insufficient data':
+                    i[numeric] = math.inf
+                elif not isinstance(v, (int, float)):
+                    stripped = nan.sub('', v)
+                    i[numeric] = float(stripped) if '.' in stripped else int(stripped)
 
-		tbody.append(tr_a)
+        i['url'] = f"{part_url}{i['id']}"
 
-	return thead, tbody
+        line = tuple(i[k] for k in head)
+        # print("line:", line)
+        items.append(line)
+
+    items.sort(key=lambda line: line[0])
+
+    return head, items
 
 
 if __name__ == '__main__':
-	import argparse
-	import csv
+    import argparse
+    import csv
 
-	base_urls = {
-		"CPU": "https://www.cpubenchmark.net/CPU_mega_page.html",
-		"GPU": "https://www.videocardbenchmark.net/GPU_mega_page.html",
-		"HDD": "https://www.harddrivebenchmark.net/hdd-mega-page.html"
-	}
-	
-	part_urls = {
-		'CPU': 'https://www.cpubenchmark.net/cpu.php?id=',
-		'GPU': 'https://www.videocardbenchmark.net/gpu.php?id=',
-		'HDD': 'https://www.harddrivebenchmark.net/hdd.php?id='
-	}
+    arg = argparse.ArgumentParser()
+    arg.add_argument('-t', '--type', default="CPU", choices=["CPU", "GPU", "HDD"], type=str.upper)
+    arg.add_argument('-o', '--output_file', type=argparse.FileType('w', encoding='UTF-8'))
+    args = arg.parse_args()
 
-	arg = argparse.ArgumentParser()
-	arg.add_argument("--type", default="CPU", choices=["CPU", "GPU", "HDD"], type=str.upper)
-	arg.add_argument('out', type=argparse.FileType('w', encoding='UTF-8'))
-	args = arg.parse_args()
+    print("Starting parsing Passmark", args.type, "category")
 
-	print("Starting parsing Passmark", args.type, "category")
+    csv_writer = csv.writer(args.output_file)
 
-	csv_writer = csv.writer(args.out)
-
-	thead, tbody = get_page(base_urls[args.type], part_urls[args.type])
-	csv_writer.writerow(thead)
-	csv_writer.writerows(tbody)
-	args.out.close()
+    head, items = get_table(args.type)
+    csv_writer.writerow(head)
+    csv_writer.writerows(items)
+    args.output_file.close()
