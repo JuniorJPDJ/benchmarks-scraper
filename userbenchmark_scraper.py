@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+from typing import Optional
 
 import cloudscraper
 from bs4 import BeautifulSoup
@@ -13,7 +14,7 @@ class UserBenchmarkScraper(object):
 		self.main_page = self.sess.get(base_url).text
 		self.view_state = self.main_page.split('id="j_id1:javax.faces.ViewState:0" value="', 1)[1].split('"', 1)[0]
 
-	def send_action(self, tda_options:dict=None, options:dict=None):
+	def send_action(self, tda_options: Optional[dict] = None, options: Optional[dict] = None):
 		tdahinid = {"fn": "tda", "tdtype": "TD_MC", "tdsubtype": self.tdsubtype}
 
 		if tda_options is not None:
@@ -24,12 +25,15 @@ class UserBenchmarkScraper(object):
 			'tableDataForm:tdahinid': json.dumps(tdahinid),
 			'javax.faces.ViewState': self.view_state,
 			'javax.faces.partial.ajax': 'true',
+			'javax.faces.partial.execute':	"tableDataForm:tdaid tableDataForm:tdahinid",
 		}
 
 		if options is not None:
 			data.update(options)
 
-		ret = self.sess.post(f"{self.base_url}/pages/mctablep.jsf", data)
+		ret = self.sess.post(f"{self.base_url}/pages/mctablep.xhtml", data, headers={
+			'Faces-Request': 'partial/ajax',
+		})
 		self.view_state = ret.text.split('<update id="j_id1:javax.faces.ViewState:0"><![CDATA[', 1)[1].split(']]', 1)[0]
 
 		return ret
@@ -40,8 +44,13 @@ class UserBenchmarkScraper(object):
 	# 	return resp.status_code == 200
 
 	def add_column(self, column):
-		resp = self.send_action({"action": "unhidecol", "th": column},
-														{'javax.faces.behavior.event': 'action', 'javax.faces.source': 'tableDataForm:tdaid'})
+		resp = self.send_action({
+			"action": "unhidecol",
+			"th": column,
+		}, {
+			'javax.faces.behavior.event': 'action',
+			'javax.faces.source': 'tableDataForm:tdaid',
+		})
 		return resp.status_code == 200
 
 	def sort_by(self, column):
@@ -106,7 +115,7 @@ if __name__ == '__main__':
 	print("Sorting by best benchmark scores")
 	s.sort_by('MC_BENCH')		# sort by benchmark score
 
-	cpu_writer = csv.writer(args.out)
+	csv_writer = csv.writer(args.out)
 
 	pages = int(s.main_page.split('<a>Page 1 of ', 1)[1].split('</a>', 1)[0])
 	print("Found", pages, "pages.")
@@ -117,8 +126,8 @@ if __name__ == '__main__':
 		if pg <= 1:
 			print(page[1])
 			print(page[0])
-			cpu_writer.writerow(page[args.describe])
+			csv_writer.writerow(page[args.describe])
 		for row in page[2]:
-			cpu_writer.writerow(row)
+			csv_writer.writerow(row)
 
 	args.out.close()
