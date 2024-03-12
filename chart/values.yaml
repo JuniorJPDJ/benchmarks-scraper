@@ -93,7 +93,8 @@ ingress:
   main:
     enabled: false
     hosts:
-      - paths:
+      - host: benchmarks.example.local
+        paths:
           - path: /
             service:
               name: main
