@@ -1,0 +1,24 @@
+apiVersion: v2
+name: benchmarks-webserver
+description: Scrapers for PC benchmark sites with comparison data webserver
+type: application
+version: 0.1.0
+appVersion: latest
+kubeVersion: ">=1.22.0-0"
+keywords:
+  - benchmark-scrapper
+  - benchmark-webserver
+  - benchmark
+  - passmark
+  - geekbench
+  - userbenchmark
+dependencies:
+  - name: common
+    repository: https://bjw-s.github.io/helm-charts
+    version: 3.0.0-beta4
+sources:
+  - https://github.com/JuniorJPDJ/benchmarks-scraper
+annotations:
+  artifacthub.io/links: |-
+    - name: App Source
+      url: https://github.com/JuniorJPDJ/benchmarks-scraper
