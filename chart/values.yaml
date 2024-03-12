@@ -79,3 +79,22 @@ persistence:
       - path: /app/data/
         readOnly: false
     size: 100Mi
+
+
+service:
+  main:
+    controller: main
+    ports:
+      http:
+        port: 9999
+
+
+ingress:
+  main:
+    enabled: false
+    hosts:
+      - paths:
+          - path: /
+            service:
+              name: main
+              port: http
