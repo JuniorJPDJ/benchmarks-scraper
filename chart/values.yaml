@@ -6,39 +6,39 @@
 #
 
 scrappers:
-  userbenchmark-CPU:
+  userbenchmark-cpu:
     enabled: false
     schedule: "0  0 * * *"
     command: ["./userbenchmark_scraper.py", "-t", "CPU", "-o", "data/userbenchmark_cpu.csv"]
-  userbenchmark-GPU:
+  userbenchmark-gpu:
     enabled: false
     schedule: "30 1 * * *"
     command: ["./userbenchmark_scraper.py", "-t", "GPU", "-o", "data/userbenchmark_gpu.csv"]
-  userbenchmark-SSD:
+  userbenchmark-ssd:
     enabled: false
     schedule: "0  3 * * *"
     command: ["./userbenchmark_scraper.py", "-t", "SSD", "-o", "data/userbenchmark_ssd.csv"]
-  userbenchmark-HDD:
+  userbenchmark-hdd:
     enabled: false
     schedule: "30 4 * * *"
     command: ["./userbenchmark_scraper.py", "-t", "HDD", "-o", "data/userbenchmark_hdd.csv"]
-  userbenchmark-RAM:
+  userbenchmark-ram:
     enabled: false
     schedule: "0  6 * * *"
     command: ["./userbenchmark_scraper.py", "-t", "RAM", "-o", "data/userbenchmark_ram.csv"]
-  userbenchmark-USB:
+  userbenchmark-usb:
     enabled: false
     schedule: "30 7 * * *"
     command: ["./userbenchmark_scraper.py", "-t", "USB", "-o", "data/userbenchmark_usb.csv"]
-  passmark-CPU:
+  passmark-cpu:
     enabled: false
     schedule: "0  0 * * *"
     command: ["./passmark_scraper.py", "-t", "CPU", "-o", "data/passmark_cpu.csv"]
-  passmark-GPU:
+  passmark-gpu:
     enabled: false
     schedule: "30 1 * * *"
     command: ["./passmark_scraper.py", "-t", "GPU", "-o", "data/passmark_gpu.csv"]
-  passmark-HDD:
+  passmark-hdd:
     enabled: false
     schedule: "0  3 * * *"
     command: ["./passmark_scraper.py", "-t", "HDD", "-o", "data/passmark_hdd.csv"]
