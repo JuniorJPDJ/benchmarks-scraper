@@ -1,5 +1,5 @@
 {{/* Preprocess values and prepare config file */}}
-{{- define "benchmarks-webserver.preprocess" -}}
+{{- define "benchmarks.preprocess" -}}
 controllers:
 {{- range $k, $v:= .Values.scrappers }}
 {{- if $v.enabled }}
@@ -17,7 +17,7 @@ controllers:
 {{- end }}
 {{- end }}
 {{- end -}}
-{{- $_ := merge .Values (include "benchmarks-webserver.preprocess" . | fromYaml) -}}
+{{- $_ := merge .Values (include "benchmarks.preprocess" . | fromYaml) -}}
 
 {{/* Render the templates */}}
 {{- include "bjw-s.common.loader.all" . }}
