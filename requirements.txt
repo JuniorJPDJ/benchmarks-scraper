@@ -1,5 +1,5 @@
-cloudscraper
-aiohttp
-bs4
-watchdog
-requests
+cloudscraper==1.2.71
+aiohttp[speedups]==3.10.3
+beautifulsoup4==4.12.3
+watchdog==4.0.2
+requests==2.32.3
