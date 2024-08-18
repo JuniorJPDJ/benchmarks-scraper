@@ -11,7 +11,8 @@ WORKDIR     /app
 
 ADD         requirements.txt .
 
-RUN         apk add --no-cache --virtual .build-deps \
+RUN         --mount=type=cache,target=/root/.cache,sharing=locked \
+            apk add --no-cache --virtual .build-deps \
               gcc=${GCC_VERSION} \
               build-base=${BUILD_BASE_VERSION} \
               libffi-dev=${LIBFFI_VERSION} \

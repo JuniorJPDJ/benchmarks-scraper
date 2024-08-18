@@ -46,6 +46,22 @@ jobs:
             type=ref,event=tag
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Setup buildx mount cache
+        uses: actions/cache@v4.0.2
+        id: cache
+        with:
+          path: |
+            home-cache
+          key: buildx-mount-cache
+
+      - name: Inject buildx mount cache into docker
+        uses: reproducible-containers/buildkit-cache-dance@v3.1.2
+        with:
+          cache-map: |
+            {
+              "home-cache": "/root/.cache"
+            }
+
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@5cd11c3a4ced054e52742c5fd54dca954e0edd85 # v6.7.0
