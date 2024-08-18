@@ -7,11 +7,14 @@ ARG         BUILD_BASE_VERSION="0.5-r3"
 # renovate: datasource=repology depName=alpine_3_20/libffi-dev versioning=loose
 ARG         LIBFFI_VERSION="3.4.6-r0"
 
+ARG         TARGETPLATFORM
+
 WORKDIR     /app
 
 ADD         requirements.txt .
 
-RUN         apk add --no-cache --virtual .build-deps \
+RUN         --mount=type=cache,sharing=locked,target=/root/.cache,id=home-cache-$TARGETPLATFORM \
+            apk add --no-cache --virtual .build-deps \
               gcc=${GCC_VERSION} \
               build-base=${BUILD_BASE_VERSION} \
               libffi-dev=${LIBFFI_VERSION} \
