@@ -1,5 +1,5 @@
 cloudscraper==1.2.71
 aiohttp[speedups]==3.11.11
-beautifulsoup4==4.13.1
+beautifulsoup4==4.13.2
 watchdog==6.0.0
 requests==2.32.3
