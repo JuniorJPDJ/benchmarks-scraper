@@ -1,11 +1,11 @@
 FROM        python:3.13.5-alpine@sha256:9b4929a72599b6c6389ece4ecbf415fd1355129f22bb92bb137eea098f05e975
 
-# renovate: datasource=repology depName=alpine_3_21/gcc versioning=loose
-ARG         GCC_VERSION="14.2.0-r4"
-# renovate: datasource=repology depName=alpine_3_21/build-base versioning=loose
+# renovate: datasource=repology depName=alpine_3_22/gcc versioning=loose
+ARG         GCC_VERSION="14.2.0-r6"
+# renovate: datasource=repology depName=alpine_3_22/build-base versioning=loose
 ARG         BUILD_BASE_VERSION="0.5-r3"
-# renovate: datasource=repology depName=alpine_3_21/libffi-dev versioning=loose
-ARG         LIBFFI_VERSION="3.4.7-r0"
+# renovate: datasource=repology depName=alpine_3_22/libffi-dev versioning=loose
+ARG         LIBFFI_VERSION="3.4.8-r0"
 
 ARG         TARGETPLATFORM
 
