@@ -51,7 +51,8 @@ defaultPodOptions:
 
 
 controllers:
-  main:
+  webserver:
+    suffix: webserver
     containers:
       webserver:
         image:
@@ -73,6 +74,7 @@ controllers:
 persistence:
   data:
     type: persistentVolumeClaim
+    suffix: data
     accessMode: ReadWriteOnce
     retain: true
     globalMounts:
@@ -82,20 +84,21 @@ persistence:
 
 
 service:
-  main:
-    controller: main
+  webserver:
+    controller: webserver
+    suffix: webserver
     ports:
       http:
         port: 9999
 
 
 ingress:
-  main:
+  webserver:
     enabled: false
     hosts:
       - host: benchmarks.example.local
         paths:
           - path: /
             service:
-              identifier: main
+              identifier: webserver
               port: http
